@@ -1,74 +1,110 @@
-# GenPass
-Импорт библиотек:
+1. Импорт библиотек:
+      import tkinter as tk
+   import random
+   import string
+   
+     tkinter используется для создания графического интерфейса.
+     random позволяет генерировать случайные числа.
+     string предоставляет предопределенные строки символов, такие как буквы и цифры.
 
-import tkinter as tk
-import random
-import string
-Здесь мы импортируем необходимые библиотеки: tkinter для создания графического интерфейса, random для генерации случайных символов и string для доступа к строковым константам, таким как наборы символов.
+2. Определение класса приложения:
+      class PasswordGeneratorApp:
+   
+   Этот класс инкапсулирует все функции приложения генератора паролей.
 
-Функция для генерации пароля:
+3. Инициализация приложения:
+      def __init__(self, root):
+       self.root = root
+       self.root.title("Генератор паролей")
+   
+   __init__ - это конструктор, который инициализирует объект класса.
+   В нем задается заголовок окна приложения.
 
-def generate_password(length, options):
-    characters = ''.join(option for option in options if option)
-    if not characters:
-        raise ValueError("Должен быть выбран хотя бы один тип символов.")
-    return ''.join(random.choice(characters) for _ in range(length))
-Функция generate_password принимает два аргумента: длину пароля и список опций (например, верхний регистр, нижний регистр и т. д.).
-Она создает строку characters, которая содержит все выбранные символы.
-Если ни один тип символов не выбран, выбрасывается исключение.
-Затем функция генерирует пароль заданной длины, выбирая случайные символы из строки characters.
-Обработчик нажатия кнопки генерации пароля:
+4. Создание переменных управления:
+      self.include_lowercase = tk.BooleanVar(value=True)
+   self.include_digits = tk.BooleanVar(value=True)
+   self.include_special = tk.BooleanVar(value=True)
 
-def on_generate():
-    length = int(length_entry.get())
-    options = [
-        uppercase_var.get() * string.ascii_uppercase,
-        lowercase_var.get() * string.ascii_lowercase,
-        digits_var.get() * string.digits,
-        special_chars_var.get() * string.punctuation
-    ]
-    password_output.config(state='normal')
-    password_output.delete(0, tk.END)
-    password_output.insert(0, generate_password(length, options))
-    password_output.config(state='readonly')
-Функция on_generate вызывается при нажатии кнопки "Сгенерировать пароль".
-Она получает длину пароля из текстового поля и формирует список options, который содержит выбранные символы в зависимости от состояния соответствующих чекбоксов.
-После этого она генерирует пароль и отображает его в поле password_output.
-Создание основного окна приложения:
+   self.password_length = tk.IntVar(value=12)
+   
+   BooleanVar используется для хранения значений для чекбоксов.
+   IntVar хранит длину пароля, по умолчанию равную 12 символам.
 
-root = tk.Tk()
-root.title("Генератор паролей")
-Здесь создается основное окно приложения с заголовком "Генератор паролей".
-Создание элементов интерфейса:
+5. Создание виджетов:
+      self.create_widgets()
+   
+   Вызов метода для создания элементов интерфейса.
 
-tk.Label(root, text="Длина пароля:").grid(row=0, column=0)
-length_entry = tk.Entry(root)
-length_entry.grid(row=0, column=1)
-Создаются метка и текстовое поле для ввода длины пароля.
-Чекбоксы для выбора типов символов:
+6. Метод создания виджетов:
+      def create_widgets(self):
+   
+   В этом методе создаются элементы интерфейса, такие как метки, чекбоксы и кнопки.
 
-uppercase_var = tk.BooleanVar(value=True)
-lowercase_var = tk.BooleanVar(value=True)
-digits_var = tk.BooleanVar(value=True)
-special_chars_var = tk.BooleanVar(value=True)
+7. Настройка виджетов:
+      tk.Label(self.root, text="Длина пароля:").pack()
+   tk.Entry(self.root, textvariable=self.password_length).pack()
+   
+   Label создает текстовую метку.
+   Entry создает поле для ввода, связанное с переменной password_length.
 
-for i, (text, var) in enumerate([( "Верхний регистр", uppercase_var),
-                                   ("Нижний регистр", lowercase_var),
-                                   ("Цифры", digits_var),
-                                   ("Специальные символы", special_chars_var)]):
-    tk.Checkbutton(root, text=text, variable=var).grid(row=i+1, columnspan=2)
-Создаются чекбоксы для выбора, какие типы символов будут использоваться в пароле. Все чекбоксы по умолчанию установлены в состояние "выбрано".
-Кнопка для генерации пароля:
+8. Чекбоксы:
+      tk.Checkbutton(self.root, text="Включить буквы нижнего регистра (a-z)", variable=self.include_lowercase).pack()
+   tk.Checkbutton(self.root, text="Включить цифры (0-9)", variable=self.include_digits).pack()
+   tk.Checkbutton(self.root, text="Включить спецсимволы (! @ # $ %)", variable=self.include_special).pack()
+   
+   Эти элементы позволяют пользователю выбрать, какие типы символов следует использовать при генерации пароля.
 
-tk.Button(root, text="Сгенерировать пароль", command=on_generate).grid(row=5, columnspan=2)
-Кнопка, при нажатии на которую вызывается функция on_generate.
-Поле для отображения сгенерированного пароля:
+9. Кнопка для генерации пароля:
+      tk.Button(self.root, text="Сгенерировать пароль", command=self.generate_password).pack()
+   
+   Кнопка вызывает метод generate_password() при нажатии.
 
-tk.Label(root, text="Сгенерированный пароль:").grid(row=6, column=0)
-password_output = tk.Entry(root, state='readonly')
-password_output.grid(row=6, column=1)
-Метка и текстовое поле для отображения сгенерированного пароля. Поле сделано только для чтения.
-Запуск главного цикла приложения:
+10. Поле для отображения пароля:
+        self.password_output = tk.Entry(self.root, width=50)
+    self.password_output.pack()
+    
+    Это поле предназначено для отображения сгенерированного пароля.
 
-root.mainloop()
-Эта строка запускает главный цикл приложения, позволяя ему реагировать на действия пользователя.
+11. Метод генерации пароля:
+        def generate_password(self):
+    
+    Этот метод формирует сам пароль.
+
+12. Формирование строки символов:
+        characters = ""
+    if self.include_lowercase.get():
+        characters += string.ascii_lowercase
+    if self.include_digits.get():
+        characters += string.digits
+    if self.include_special.get():
+        characters += "!@#$%"
+    
+    В этом фрагменте создается строка, содержащая все символы, которые можно использовать для генерации пароля, согласно выбору пользователя.
+
+13. Проверка на наличие символов:
+        if not characters:
+        self.password_output.delete(0, tk.END)
+        self.password_output.insert(0, "Выберите хотя бы один тип символов.")
+        return
+    
+    Если не выбрано ни одного типа символов, пользователю выводится сообщение.
+
+14. Генерация пароля:
+        password = ''.join(random.choice(characters) for _ in range(self.password_length.get()))
+    
+    Пароль генерируется с использованием случайных символов из characters, длиной, указанной пользователем.
+
+15. Вывод сгенерированного пароля:
+        self.password_output.delete(0, tk.END)
+    self.password_output.insert(0, password)
+    
+    Сгенерированный пароль отображается в соответствующем поле.
+
+16. Запуск приложения:
+
+    if __name__ == "__main__":
+        root = tk.Tk()
+        app = PasswordGeneratorApp(root)
+        root.mainloop()
+  
+ Этот блок кода создает главное окно приложения и запускает цикл обработки событий.
